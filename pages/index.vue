@@ -20,7 +20,7 @@
             <span>{{ post.title }}</span>
             <Icon
               name="heroicons:chevron-right-solid"
-              class="w-10 h-10 text-blue-400"
+              class="w-10 h-10 text-slate-400"
             />
           </button>
         </li>
@@ -40,6 +40,7 @@
               type="checkbox"
               id="create-post-modal"
               class="modal-toggle"
+              v-model="show_create_post_modal"
             />
             <label for="create-post-modal" class="modal cursor-pointer">
               <label
@@ -59,7 +60,7 @@
         </li>
       </ul>
 
-      <main v-if="post_selected" class="bg-base-300 flex-1 rounded-2xl">
+      <main v-if="post_selected" class="bg-base-100 flex-1 rounded-2xl">
         <div class="p-4 pb-6">
           <h2 class="text-2xl mb-4 py-4">
             {{ post_selected.title }}
@@ -118,9 +119,10 @@
 
 <script setup>
 useHead({ htmlAttrs: { lang: "pt-br" } });
-const post_title = ref("Como ganhar dinheiro rápido?");
+const post_title = ref("");
 const prompt = ref("");
 const post_selected = ref(null);
+const show_create_post_modal = ref(false);
 
 const { data: post_list } = await useAsyncData("post_list", () =>
   useFetch("/api/post/all")
@@ -134,7 +136,11 @@ async function createPost() {
       body: { title },
     });
 
+    console.log(post_list.value.data);
+
     post_selected.value = resp.data.value.post;
+    post_list.value.data.push(resp.data.value.post);
+    show_create_post_modal.value = false;
   }
 }
 

@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.6.0",
+    "@types/node": "^18.15.3",
     "daisyui": "^2.51.3",
     "nuxt": "^3.3.1",
     "nuxt-icon": "^0.3.3",
