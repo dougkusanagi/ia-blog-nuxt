@@ -20,7 +20,7 @@
             <span>{{ post.title }}</span>
             <Icon
               name="heroicons:chevron-right-solid"
-              class="w-10 h-10 text-slate-400"
+              class="w-6 h-10 text-slate-400 ml-auto"
             />
           </button>
         </li>
