@@ -13,6 +13,7 @@
 </template>
 
 <script setup>
+const emit = defineEmits(["deleted"]);
 const pending = ref(false);
 
 const props = defineProps({
@@ -21,8 +22,6 @@ const props = defineProps({
 
 async function deletePostImagine() {
   pending.value = true;
-
-  console.log("deletePostImagine");
 
   await useFetch("/api/post-imagine/delete", {
     method: "post",
@@ -36,9 +35,9 @@ async function deletePostImagine() {
     onResponse({ request, response, options }) {
       console.log("[onResponse]", { request, options, response });
 
-      if (response.ok) {
-        alert("Registro deletado");
-      }
+      emit("deleted", response);
+
+      if (response.ok) alert("Registro deletado");
     },
   });
 
