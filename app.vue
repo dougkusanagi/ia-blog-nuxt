@@ -109,7 +109,7 @@
                 <button
                   class="btn btn-block disabled:bg-base-200 min-h-full"
                   :disabled="btn_imagine_is_disabled"
-                  @click="imagine"
+                  @click="handle_imagine"
                 >
                   Imaginar
                 </button>
@@ -151,14 +151,7 @@ async function createPost() {
   }
 }
 
-async function deletePostImagine() {
-  const resp = await useFetch("/api/post-imagine/delete", {
-    method: "post",
-    body: { title },
-  });
-}
-
-async function imagine() {
+async function handle_imagine() {
   prompt_is_readonly.value = true;
   btn_imagine_is_disabled.value = true;
 
@@ -167,21 +160,21 @@ async function imagine() {
     body: { prompt },
   });
 
-  const imagine = {
-    question: prompt.value,
-    answer: answer,
-  };
+  // const imagine = {
+  //   question: prompt.value,
+  //   answer: answer,
+  // };
 
-  post_selected.value.postImagines.push(imagine);
+  // post_selected.value.postImagines.push(imagine);
 
-  imagine.postId = post_selected.value.id;
+  // imagine.postId = post_selected.value.id;
 
-  console.log(imagine);
+  console.log("imagine");
 
-  await useFetch("/api/post-imagine/create", {
-    method: "post",
-    body: { imagine },
-  });
+  // await useFetch("/api/post-imagine/create", {
+  //   method: "post",
+  //   body: { imagine },
+  // });
 
   prompt.value = "";
   prompt_is_readonly.value = false;

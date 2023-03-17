@@ -22,7 +22,7 @@ const props = defineProps({
 async function deletePostImagine() {
   pending.value = true;
 
-  const resp = await useFetch("/api/post-imagine/delete", {
+  await useFetch("/api/post-imagine/delete", {
     method: "post",
     body: { id: props.id },
     onRequest({ request, options }) {
