@@ -1,3 +1,0 @@
-supabase pass
-0aVY87MpbavRzHwu
-postgresql://postgres:0aVY87MpbavRzHwu@db.ebvhqokfzqxtxllwjqbh.supabase.co:5432/postgres
