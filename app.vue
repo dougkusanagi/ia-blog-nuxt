@@ -31,7 +31,6 @@
         </li>
 
         <li>
-          <!-- The button to open modal -->
           <label for="create-post-modal" class="btn">
             <Icon
               name="heroicons:plus-circle-20-solid"
@@ -40,7 +39,6 @@
           </label>
 
           <Teleport to="body">
-            <!-- Put this part before </body> tag -->
             <input
               type="checkbox"
               id="create-post-modal"
@@ -52,13 +50,15 @@
                 class="modal-box relative w-11/12 max-w-5xl flex gap-2"
                 for=""
               >
-                <input
-                  type="text"
-                  placeholder="Digite o título do post"
-                  class="input input-bordered w-full"
-                  v-model="post_title"
-                />
-                <button class="btn w-3/12" @click="createPost">Salvar</button>
+                <form @submit.prevent="createPost">
+                  <input
+                    type="text"
+                    placeholder="Digite o título do post"
+                    class="input input-bordered w-full"
+                    v-model="post_title"
+                  />
+                  <button class="btn w-3/12">Salvar</button>
+                </form>
               </label>
             </label>
           </Teleport>
@@ -84,8 +84,13 @@
               </div>
 
               <div class="flex gap-4 w-full">
-                <p class="flex-1">{{ imagine.answer }}</p>
-                <PostImagineDeleteButton :id="imagine.id" />
+                <article class="flex-1 lg:prose-xl">
+                  {{ imagine.answer }}
+                </article>
+                <PostImagineDeleteButton
+                  :id="imagine.id"
+                  @deleted="handlePostImagineDeleted"
+                />
               </div>
             </div>
           </div>
@@ -137,6 +142,15 @@ const { data: post_list } = await useAsyncData("post_list", () =>
   useFetch("/api/post/all")
 );
 
+async function handlePostImagineDeleted(event) {
+  console.log(post_selected.value.postImagines);
+  if (event.ok) {
+    post_selected.value.postImagines = post_selected.value.postImagines.filter(
+      (postImagine) => postImagine.id !== event._data.id
+    );
+  }
+}
+
 async function createPost() {
   if (post_title.value) {
     const title = post_title.value;
@@ -166,7 +180,6 @@ async function handle_imagine() {
   };
 
   post_selected.value.postImagines.push(imagine);
-
   imagine.postId = post_selected.value.id;
 
   await useFetch("/api/post-imagine/create", {

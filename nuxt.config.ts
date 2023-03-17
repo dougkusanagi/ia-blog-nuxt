@@ -2,4 +2,7 @@
 export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "nuxt-icon"],
   // debug: true,
+  app: {
+    // baseURL: "/dist",
+  },
 });
