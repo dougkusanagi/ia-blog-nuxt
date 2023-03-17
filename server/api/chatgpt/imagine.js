@@ -1,6 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
 
 export default defineEventHandler(async (event) => {
+  // return { data: "fake imagine" };
   const { prompt } = await readBody(event);
 
   const configuration = new Configuration({
