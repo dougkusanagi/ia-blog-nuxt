@@ -1,4 +1,7 @@
-import { findPostByTitle, storePost } from "~~/server/repositories/Post";
+import {
+  findPostByTitle,
+  storePost,
+} from "~~/server/repositories/PostRepository";
 
 export default defineEventHandler(async (event) => {
   const { title } = await readBody(event);
@@ -11,8 +14,6 @@ export default defineEventHandler(async (event) => {
   }
 
   const postExist = await findPostByTitle(title);
-  // console.log(postExist);
-  // return postExist;
 
   if (postExist) {
     return sendError(

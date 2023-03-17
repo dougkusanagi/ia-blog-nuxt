@@ -11,16 +11,21 @@
     </header>
 
     <div class="flex p-4 gap-4">
-      <ul class="menu bg-base-100 w-56 p-2 rounded-box">
+      <ul class="menu bg-base-300 w-80 p-2 rounded-box h-fit">
         <li v-for="post in post_list.data" class="mb-2">
           <button
             @click="post_selected = post"
-            class="flex bg-base-300 text-left"
+            class="flex bg-base-100 hover:opacity-75 text-left"
+            :class="
+              post_selected && post_selected.id === post.id
+                ? 'bg-indigo-700 text-slate-200'
+                : ''
+            "
           >
             <span>{{ post.title }}</span>
             <Icon
-              name="heroicons:chevron-right-solid"
-              class="w-6 h-10 text-slate-400 ml-auto"
+              name="heroicons:chevron-right-20-solid"
+              class="w-8 h-10 ml-auto"
             />
           </button>
         </li>
@@ -40,7 +45,7 @@
               type="checkbox"
               id="create-post-modal"
               class="modal-toggle"
-              v-model="show_create_post_modal"
+              v-model="show_modal_create_post"
             />
             <label for="create-post-modal" class="modal cursor-pointer">
               <label
@@ -60,18 +65,18 @@
         </li>
       </ul>
 
-      <main v-if="post_selected" class="bg-base-100 flex-1 rounded-2xl">
+      <main v-if="post_selected" class="bg-base-300 flex-1 rounded-2xl">
         <div class="p-4 pb-6">
           <h2 class="text-2xl mb-4 py-4">
             {{ post_selected.title }}
           </h2>
 
           <div
-            v-if="post_selected.postImagine"
+            v-if="post_selected.postImagines"
             class="questions text-slate-500"
           >
             <div
-              v-for="imagine in post_selected.postImagine"
+              v-for="imagine in post_selected.postImagines"
               class="flex gap-4 mb-4 pb-4 border-b-2 border-base-100"
             >
               <div class="w-3/12">
@@ -79,35 +84,36 @@
               </div>
 
               <div class="flex gap-4 w-full">
-                <p>{{ imagine.answer }}</p>
-
-                <button class="btn btn-error">
-                  <Icon name="heroicons:trash-20-solid" />
-                  Apagar
-                </button>
+                <p class="flex-1">{{ imagine.answer }}</p>
+                <PostImagineDeleteButton :id="imagine.id" />
               </div>
             </div>
           </div>
 
-          <div class="pb-4 mb-4">
+          <div class="pb-4">
             <label class="label">
               <span class="label-text">Tema do Artigo</span>
             </label>
 
-            <div class="flex w-full items-end gap-3">
+            <div class="flex w-full gap-3">
               <div class="form-control w-full">
                 <textarea
-                  class="w-full textarea textarea-bordered h-24"
+                  class="w-full textarea textarea-bordered h-24 read-only:bg-base-200"
                   placeholder="Sobre o que é o artigo?"
                   v-model="prompt"
+                  :readonly="prompt_is_readonly"
                 ></textarea>
               </div>
 
               <div class="min-w-[150px]">
-                <button class="btn btn-block mb-4" @click="imagine">
+                <button
+                  class="btn btn-block disabled:bg-base-200 min-h-full"
+                  :disabled="btn_imagine_is_disabled"
+                  @click="imagine"
+                >
                   Imaginar
                 </button>
-                <button class="btn btn-sm btn-block btn-success">Salvar</button>
+                <!-- <button class="btn btn-sm btn-block btn-success mt-4">Salvar</button> -->
               </div>
             </div>
           </div>
@@ -119,10 +125,13 @@
 
 <script setup>
 useHead({ htmlAttrs: { lang: "pt-br" } });
+
+const show_modal_create_post = ref(false);
+const post_selected = ref(null);
 const post_title = ref("");
 const prompt = ref("");
-const post_selected = ref(null);
-const show_create_post_modal = ref(false);
+const prompt_is_readonly = ref(false);
+const btn_imagine_is_disabled = ref(false);
 
 const { data: post_list } = await useAsyncData("post_list", () =>
   useFetch("/api/post/all")
@@ -136,20 +145,46 @@ async function createPost() {
       body: { title },
     });
 
-    console.log(post_list.value.data);
-
     post_selected.value = resp.data.value.post;
     post_list.value.data.push(resp.data.value.post);
-    show_create_post_modal.value = false;
+    show_modal_create_post.value = false;
   }
 }
 
+async function deletePostImagine() {
+  const resp = await useFetch("/api/post-imagine/delete", {
+    method: "post",
+    body: { title },
+  });
+}
+
 async function imagine() {
-  imagine_response.value = await useFetch("/api/chatgpt", {
+  prompt_is_readonly.value = true;
+  btn_imagine_is_disabled.value = true;
+
+  const { data: answer } = await useFetch("/api/chatgpt/imagine", {
     method: "post",
     body: { prompt },
   });
 
-  console.log(imagine_response.value);
+  const imagine = {
+    question: prompt.value,
+    answer: answer,
+  };
+
+  post_selected.value.postImagines.push(imagine);
+
+  imagine.postId = post_selected.value.id;
+
+  console.log(imagine);
+
+  await useFetch("/api/post-imagine/create", {
+    method: "post",
+    body: { imagine },
+  });
+
+  prompt.value = "";
+  prompt_is_readonly.value = false;
+  btn_imagine_is_disabled.value = false;
 }
 </script>

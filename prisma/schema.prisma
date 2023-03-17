@@ -22,8 +22,8 @@ model Post {
 
 model PostImagine {
   id       Int    @id @default(autoincrement())
-  question String
-  answer   String
+  question String @db.Text()
+  answer   String @db.Text()
 
   post   Post? @relation(fields: [postId], references: [id])
   postId Int?

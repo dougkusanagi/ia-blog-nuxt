@@ -1,6 +1,11 @@
 import { prisma } from "../lib/prisma";
 
-export const findAll = async () => await prisma.post.findMany();
+export const findAll = async () =>
+  await prisma.post.findMany({
+    include: {
+      postImagines: true,
+    },
+  });
 
 export const findPostByTitle = async (title) => {
   const post = await prisma.post.findMany({
