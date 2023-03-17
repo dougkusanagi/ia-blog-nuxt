@@ -95,27 +95,27 @@
               <span class="label-text">Tema do Artigo</span>
             </label>
 
-            <div class="flex w-full gap-3">
+            <form class="flex w-full gap-3" @submit.prevent="handle_imagine">
               <div class="form-control w-full">
-                <textarea
-                  class="w-full textarea textarea-bordered h-24 read-only:bg-base-200"
+                <input
+                  class="input input-bordered read-only:bg-base-200"
                   placeholder="Sobre o que é o artigo?"
+                  type="text"
                   v-model="prompt"
                   :readonly="prompt_is_readonly"
-                ></textarea>
+                />
               </div>
 
               <div class="min-w-[150px]">
                 <button
                   class="btn btn-block disabled:bg-base-200 min-h-full"
                   :disabled="btn_imagine_is_disabled"
-                  @click="handle_imagine"
                 >
                   Imaginar
                 </button>
                 <!-- <button class="btn btn-sm btn-block btn-success mt-4">Salvar</button> -->
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </main>
@@ -157,24 +157,22 @@ async function handle_imagine() {
 
   const { data: answer } = await useFetch("/api/chatgpt/imagine", {
     method: "post",
-    body: { prompt },
+    body: { prompt: prompt.value },
   });
 
-  // const imagine = {
-  //   question: prompt.value,
-  //   answer: answer,
-  // };
+  const imagine = {
+    question: prompt.value,
+    answer: answer,
+  };
 
-  // post_selected.value.postImagines.push(imagine);
+  post_selected.value.postImagines.push(imagine);
 
-  // imagine.postId = post_selected.value.id;
+  imagine.postId = post_selected.value.id;
 
-  console.log("imagine");
-
-  // await useFetch("/api/post-imagine/create", {
-  //   method: "post",
-  //   body: { imagine },
-  // });
+  await useFetch("/api/post-imagine/create", {
+    method: "post",
+    body: { imagine },
+  });
 
   prompt.value = "";
   prompt_is_readonly.value = false;

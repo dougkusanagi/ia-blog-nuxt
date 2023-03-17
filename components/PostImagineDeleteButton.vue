@@ -22,6 +22,8 @@ const props = defineProps({
 async function deletePostImagine() {
   pending.value = true;
 
+  console.log("deletePostImagine");
+
   await useFetch("/api/post-imagine/delete", {
     method: "post",
     body: { id: props.id },
