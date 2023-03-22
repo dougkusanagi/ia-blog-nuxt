@@ -118,16 +118,16 @@
                   placeholder="Sobre o que é o artigo?"
                   type="text"
                   v-model="prompt"
-                  :readonly="prompt_is_readonly"
+                  :readonly="imagine_is_pending"
                 />
               </div>
 
               <div class="min-w-[150px]">
                 <button
                   class="btn btn-block disabled:bg-base-200 min-h-full"
-                  :disabled="btn_imagine_is_pending"
+                  :disabled="imagine_is_pending"
                 >
-                  <span :class="btn_imagine_is_pending ? '' : 'hidden'">
+                  <span :class="imagine_is_pending ? '' : 'hidden'">
                     <Icon
                       name="heroicons:arrow-path"
                       class="w-4 h-4 animate-spin"
@@ -153,8 +153,7 @@ const show_modal_create_post = ref(false);
 const post_selected = ref(null);
 const post_title = ref("");
 const prompt = ref("");
-const prompt_is_readonly = ref(false);
-const btn_imagine_is_pending = ref(false);
+const imagine_is_pending = ref(false);
 
 const { data: post_list } = await useAsyncData("post_list", () =>
   useFetch("/api/post/all")
@@ -184,8 +183,7 @@ async function createPost() {
 }
 
 async function handle_imagine() {
-  prompt_is_readonly.value = true;
-  btn_imagine_is_pending.value = true;
+  imagine_is_pending.value = true;
 
   const { data: answer } = await useFetch("/api/chatgpt/imagine", {
     method: "post",
@@ -206,7 +204,6 @@ async function handle_imagine() {
   });
 
   prompt.value = "";
-  prompt_is_readonly.value = false;
-  btn_imagine_is_pending.value = false;
+  imagine_is_pending.value = false;
 }
 </script>
