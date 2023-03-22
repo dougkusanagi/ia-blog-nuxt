@@ -23,6 +23,7 @@
             "
           >
             <span>{{ post.title }}</span>
+
             <Icon
               name="heroicons:chevron-right-20-solid"
               class="w-8 h-10 ml-auto"
@@ -46,18 +47,26 @@
               v-model="show_modal_create_post"
             />
             <label for="create-post-modal" class="modal cursor-pointer">
-              <label
-                class="modal-box relative w-11/12 max-w-5xl flex gap-2"
-                for=""
-              >
+              <label class="modal-box relative max-w-5xl" for="">
                 <form @submit.prevent="createPost">
-                  <input
-                    type="text"
-                    placeholder="Digite o título do post"
-                    class="input input-bordered w-full"
-                    v-model="post_title"
-                  />
-                  <button class="btn w-3/12">Salvar</button>
+                  <label
+                    for="create-post-modal"
+                    class="btn btn-sm btn-circle absolute right-3 top-3"
+                    >✕</label
+                  >
+
+                  <h3 class="text-lg font-bold">Criando um Artigo</h3>
+
+                  <div class="flex gap-3 py-3">
+                    <input
+                      type="text"
+                      placeholder="Digite o título do post"
+                      class="input input-bordered w-full"
+                      v-model="post_title"
+                    />
+
+                    <button class="btn w-3/12">Salvar</button>
+                  </div>
                 </form>
               </label>
             </label>
@@ -77,20 +86,22 @@
           >
             <div
               v-for="imagine in post_selected.postImagines"
-              class="flex gap-4 mb-4 pb-4 border-b-2 border-base-100"
+              class="gap-4 mb-4 pb-4"
             >
-              <div class="w-3/12">
+              <div class="flex justify-between bg-slate-500/10 -mx-4 px-4 py-6">
                 <p>{{ imagine.question }}</p>
-              </div>
 
-              <div class="flex gap-4 w-full">
-                <article class="flex-1 lg:prose-xl">
-                  {{ imagine.answer }}
-                </article>
                 <PostImagineDeleteButton
                   :id="imagine.id"
                   @deleted="handlePostImagineDeleted"
                 />
+              </div>
+
+              <div class="flex gap-4 w-full">
+                <article
+                  v-html="imagine.answer"
+                  class="flex-1 lg:prose-xl pt-3"
+                ></article>
               </div>
             </div>
           </div>
@@ -114,8 +125,15 @@
               <div class="min-w-[150px]">
                 <button
                   class="btn btn-block disabled:bg-base-200 min-h-full"
-                  :disabled="btn_imagine_is_disabled"
+                  :disabled="btn_imagine_is_pending"
                 >
+                  <span :class="btn_imagine_is_pending ? '' : 'hidden'">
+                    <Icon
+                      name="heroicons:arrow-path"
+                      class="w-4 h-4 animate-spin"
+                    />
+                  </span>
+
                   Imaginar
                 </button>
                 <!-- <button class="btn btn-sm btn-block btn-success mt-4">Salvar</button> -->
@@ -136,7 +154,7 @@ const post_selected = ref(null);
 const post_title = ref("");
 const prompt = ref("");
 const prompt_is_readonly = ref(false);
-const btn_imagine_is_disabled = ref(false);
+const btn_imagine_is_pending = ref(false);
 
 const { data: post_list } = await useAsyncData("post_list", () =>
   useFetch("/api/post/all")
@@ -167,7 +185,7 @@ async function createPost() {
 
 async function handle_imagine() {
   prompt_is_readonly.value = true;
-  btn_imagine_is_disabled.value = true;
+  btn_imagine_is_pending.value = true;
 
   const { data: answer } = await useFetch("/api/chatgpt/imagine", {
     method: "post",
@@ -189,6 +207,6 @@ async function handle_imagine() {
 
   prompt.value = "";
   prompt_is_readonly.value = false;
-  btn_imagine_is_disabled.value = false;
+  btn_imagine_is_pending.value = false;
 }
 </script>

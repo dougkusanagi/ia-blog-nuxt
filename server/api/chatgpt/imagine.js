@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
-    max_tokens: 4000,
+    max_tokens: 2000,
     prompt: prompt,
   });
 
