@@ -149,11 +149,11 @@
 <script setup>
 useHead({ htmlAttrs: { lang: "pt-br" } });
 
-const show_modal_create_post = ref(false);
-const post_selected = ref(null);
-const post_title = ref("");
 const prompt = ref("");
+const post_title = ref("");
+const post_selected = ref(null);
 const imagine_is_pending = ref(false);
+const show_modal_create_post = ref(false);
 
 const { data: post_list } = await useAsyncData("post_list", () =>
   useFetch("/api/post/all")
