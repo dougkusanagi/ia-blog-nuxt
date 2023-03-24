@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider          = "mysql"
+  provider          = "sqlite"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
 }
@@ -22,8 +22,8 @@ model Post {
 
 model PostImagine {
   id       Int    @id @default(autoincrement())
-  question String @db.Text()
-  answer   String @db.Text()
+  question String
+  answer   String
 
   post   Post? @relation(fields: [postId], references: [id])
   postId Int?

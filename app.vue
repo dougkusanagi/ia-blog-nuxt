@@ -14,7 +14,7 @@
       <ul class="menu bg-base-300 w-80 p-2 rounded-box h-fit">
         <li v-for="post in post_list.data" class="mb-2">
           <button
-            @click="post_selected = post"
+            @click="choosePost(post)"
             class="flex bg-base-100 hover:opacity-75 text-left"
             :class="
               post_selected && post_selected.id === post.id
@@ -119,6 +119,7 @@
                   type="text"
                   v-model="prompt"
                   :readonly="imagine_is_pending"
+                  ref="prompt_ref"
                 />
               </div>
 
@@ -150,6 +151,7 @@
 useHead({ htmlAttrs: { lang: "pt-br" } });
 
 const prompt = ref("");
+const prompt_ref = ref("");
 const post_title = ref("");
 const post_selected = ref(null);
 const imagine_is_pending = ref(false);
@@ -159,8 +161,13 @@ const { data: post_list } = await useAsyncData("post_list", () =>
   useFetch("/api/post/all")
 );
 
+async function choosePost(post) {
+  post_selected.value = post;
+  await nextTick();
+  prompt_ref.value.focus();
+}
+
 async function handlePostImagineDeleted(event) {
-  console.log(post_selected.value.postImagines);
   if (event.ok) {
     post_selected.value.postImagines = post_selected.value.postImagines.filter(
       (postImagine) => postImagine.id !== event._data.id
@@ -179,6 +186,7 @@ async function createPost() {
     post_selected.value = resp.data.value.post;
     post_list.value.data.push(resp.data.value.post);
     show_modal_create_post.value = false;
+    prompt_ref.focus();
   }
 }
 
